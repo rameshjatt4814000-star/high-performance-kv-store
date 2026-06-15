@@ -129,8 +129,7 @@ func (w *WAL) Replay(applyFunc func(recType byte, key string, value []byte, vers
 			return fmt.Errorf("failed to read wal header: %w", err)
 		}
 
-		payloadSize := binary.BigEndian.PutUint32(make([]byte, 4), 0) // init
-		payloadSize = binary.BigEndian.Uint32(headerBuf[0:4])
+		payloadSize := binary.BigEndian.Uint32(headerBuf[0:4])
 		expectedCrc := binary.BigEndian.Uint32(headerBuf[4:8])
 
 		payload := make([]byte, payloadSize)

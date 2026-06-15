@@ -1,7 +1,6 @@
 package store
 
 import (
-	"context"
 	"fmt"
 	"hash/fnv"
 	"strings"
