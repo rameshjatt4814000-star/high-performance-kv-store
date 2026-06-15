@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  node1:
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+    container_name: node1
+    ports:
+      - "8080:8080"
+    environment:
+      - KV_NODE_ID=node1
+      - KV_PORT=8080
+      - KV_DATA_DIR=/app/data
+      - KV_ADVERTISE_ADDR=node1:8080
+    volumes:
+      - node1_data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+
+  node2:
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+    container_name: node2
+    ports:
+      - "8081:8081"
+    environment:
+      - KV_NODE_ID=node2
+      - KV_PORT=8081
+      - KV_DATA_DIR=/app/data
+      - KV_SEED_ADDR=node1:8080
+      - KV_ADVERTISE_ADDR=node2:8081
+    volumes:
+      - node2_data:/app/data
+    depends_on:
+      node1:
+        condition: service_healthy
+
+  node3:
+    build:
+      context: ../
+      dockerfile: deploy/Dockerfile
+    container_name: node3
+    ports:
+      - "8082:8082"
+    environment:
+      - KV_NODE_ID=node3
+      - KV_PORT=8082
+      - KV_DATA_DIR=/app/data
+      - KV_SEED_ADDR=node1:8080
+      - KV_ADVERTISE_ADDR=node3:8082
+    volumes:
+      - node3_data:/app/data
+    depends_on:
+      node1:
+        condition: service_healthy
+
+volumes:
+  node1_data:
+  node2_data:
+  node3_data:
