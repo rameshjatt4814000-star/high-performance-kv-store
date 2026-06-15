@@ -2,7 +2,7 @@
 /bin/
 /dist/
 high-performance-kv-store
-server
+/server
 *.exe
 *.test
 *.prof
